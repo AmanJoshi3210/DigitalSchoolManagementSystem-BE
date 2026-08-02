@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="DigitalSchoolManagementSystem.API/DigitalSchoolManagementSystem.API.csproj" Id="9c3a5281-4630-4c96-a695-f03f0d958405" />
+  <Project Path="DigitalSchoolManagementSystem.Application/DigitalSchoolManagementSystem.Application.csproj" Id="cf9a24a7-ca5d-41d4-9c68-3ec6309ed4d8" />
+  <Project Path="DigitalSchoolManagementSystem.Domain/DigitalSchoolManagementSystem.Domain.csproj" Id="17723f4f-2830-4a29-b6b2-cec7357aa0f4" />
+  <Project Path="DigitalSchoolManagementSystem.Infrastructure/DigitalSchoolManagementSystem.Infrastructure.csproj" Id="ce9b4244-38f6-4ff1-8b83-8f5cb4d2809c" />
+  <Project Path="DigitalSchoolManagementSystem.Shared/DigitalSchoolManagementSystem.Shared.csproj" Id="60307e8f-5ee0-4619-af6e-8e031334c8f0" />
+</Solution>
