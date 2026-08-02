@@ -9,6 +9,11 @@ namespace DigitalSchoolManagementSystem.Application.Interfaces
         IStaffUserRepository StaffUsers { get; }
         IGenericRepository<Role> Roles { get; }
         IRefreshTokenRepository RefreshTokens { get; }
+        ISubjectRepository Subjects { get; }
+        IAttendanceRepository Attendances { get; }
+        IExamRepository Exams { get; }
+        IGenericRepository<ExamSubject> ExamSubjects { get; }
+        IExamResultRepository ExamResults { get; }
 
         Task<int> SaveChangesAsync();
     }

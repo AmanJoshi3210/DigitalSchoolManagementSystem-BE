@@ -15,6 +15,11 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
         public DbSet<StaffUser> StaffUsers => Set<StaffUser>();
         public DbSet<Role> Roles => Set<Role>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+        public DbSet<Subject> Subjects => Set<Subject>();
+        public DbSet<Attendance> Attendances => Set<Attendance>();
+        public DbSet<Exam> Exams => Set<Exam>();
+        public DbSet<ExamSubject> ExamSubjects => Set<ExamSubject>();
+        public DbSet<ExamResult> ExamResults => Set<ExamResult>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -89,6 +94,72 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
                       .WithMany(u => u.RefreshTokens)
                       .HasForeignKey(e => e.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Subject>(entity =>
+            {
+                entity.HasIndex(e => new { e.Grade, e.Code }).IsUnique();
+
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Code).IsRequired().HasMaxLength(20);
+                entity.Property(e => e.Grade).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Description).HasMaxLength(250);
+            });
+
+            modelBuilder.Entity<Attendance>(entity =>
+            {
+                entity.HasIndex(e => new { e.StudentId, e.Date }).IsUnique();
+
+                entity.Property(e => e.Remarks).HasMaxLength(250);
+
+                entity.HasOne(e => e.Student)
+                      .WithMany()
+                      .HasForeignKey(e => e.StudentId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Exam>(entity =>
+            {
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Grade).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.AcademicYear).IsRequired().HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<ExamSubject>(entity =>
+            {
+                entity.HasIndex(e => new { e.ExamId, e.SubjectId }).IsUnique();
+
+                entity.Property(e => e.MaxMarks).HasColumnType("decimal(5,2)");
+                entity.Property(e => e.PassingMarks).HasColumnType("decimal(5,2)");
+
+                entity.HasOne(e => e.Exam)
+                      .WithMany(e => e.ExamSubjects)
+                      .HasForeignKey(e => e.ExamId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Subject)
+                      .WithMany()
+                      .HasForeignKey(e => e.SubjectId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<ExamResult>(entity =>
+            {
+                entity.HasIndex(e => new { e.StudentId, e.ExamSubjectId }).IsUnique();
+
+                entity.Property(e => e.MarksObtained).HasColumnType("decimal(5,2)");
+                entity.Property(e => e.Grade).HasMaxLength(5);
+                entity.Property(e => e.Remarks).HasMaxLength(250);
+
+                entity.HasOne(e => e.Student)
+                      .WithMany()
+                      .HasForeignKey(e => e.StudentId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.ExamSubject)
+                      .WithMany()
+                      .HasForeignKey(e => e.ExamSubjectId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }

@@ -20,6 +20,10 @@ namespace DigitalSchoolManagementSystem.Infrastructure
             services.AddScoped<IStudentRepository, StudentRepository>();
             services.AddScoped<IStaffUserRepository, StaffUserRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<ISubjectRepository, SubjectRepository>();
+            services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+            services.AddScoped<IExamRepository, ExamRepository>();
+            services.AddScoped<IExamResultRepository, ExamResultRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddSingleton<IPasswordHasher, PasswordHasher>();

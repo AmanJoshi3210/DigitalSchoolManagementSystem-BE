@@ -8,6 +8,9 @@ namespace DigitalSchoolManagementSystem.Application.IServices
         Task<StudentDto?> GetByUserIdAsync(int userId);
         Task<IReadOnlyList<StudentDto>> GetAllAsync();
         Task<StudentDto> UpdateAsync(int id, UpdateStudentDto request);
+        Task<StudentDto> UpdateOwnProfileAsync(int userId, UpdateOwnProfileDto request);
+        Task<EducationStatusDto?> GetEducationStatusByIdAsync(int studentId);
+        Task<EducationStatusDto?> GetEducationStatusByUserIdAsync(int userId);
         Task DeleteAsync(int id);
     }
 }

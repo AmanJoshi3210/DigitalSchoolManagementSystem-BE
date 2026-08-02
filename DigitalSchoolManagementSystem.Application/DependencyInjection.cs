@@ -12,6 +12,12 @@ namespace DigitalSchoolManagementSystem.Application
             services.AddScoped<IStudentAuthService, StudentAuthService>();
             services.AddScoped<IStaffAuthService, StaffAuthService>();
             services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IHomeService, HomeService>();
+            services.AddScoped<ISubjectService, SubjectService>();
+            services.AddScoped<IAttendanceService, AttendanceService>();
+            services.AddScoped<IExamService, ExamService>();
+            services.AddScoped<IExamResultService, ExamResultService>();
+            services.AddScoped<IStudentAcademicsService, StudentAcademicsService>();
 
             return services;
         }

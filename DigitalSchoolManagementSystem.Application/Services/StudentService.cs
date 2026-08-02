@@ -59,6 +59,37 @@ namespace DigitalSchoolManagementSystem.Application.Services
             return ToDto(student);
         }
 
+        public async Task<StudentDto> UpdateOwnProfileAsync(int userId, UpdateOwnProfileDto request)
+        {
+            var student = await _unitOfWork.Students.GetByUserIdAsync(userId)
+                ?? throw new KeyNotFoundException("Student not found.");
+
+            student.User.FirstName = request.FirstName;
+            student.User.LastName = request.LastName;
+            student.User.PhoneNumber = request.PhoneNumber;
+            student.User.Address = request.Address;
+            student.User.DateOfBirth = request.DateOfBirth;
+            student.User.Gender = request.Gender;
+            student.User.ProfileImageUrl = request.ProfileImageUrl;
+
+            _unitOfWork.Users.Update(student.User);
+            await _unitOfWork.SaveChangesAsync();
+
+            return ToDto(student);
+        }
+
+        public async Task<EducationStatusDto?> GetEducationStatusByIdAsync(int studentId)
+        {
+            var student = await _unitOfWork.Students.GetByIdAsync(studentId);
+            return student is null ? null : ToEducationStatusDto(student);
+        }
+
+        public async Task<EducationStatusDto?> GetEducationStatusByUserIdAsync(int userId)
+        {
+            var student = await _unitOfWork.Students.GetByUserIdAsync(userId);
+            return student is null ? null : ToEducationStatusDto(student);
+        }
+
         public async Task DeleteAsync(int id)
         {
             var student = await _unitOfWork.Students.GetByIdWithDetailsAsync(id)
@@ -71,6 +102,18 @@ namespace DigitalSchoolManagementSystem.Application.Services
             _unitOfWork.Users.Update(student.User);
             await _unitOfWork.SaveChangesAsync();
         }
+
+        private static EducationStatusDto ToEducationStatusDto(Student student) => new()
+        {
+            StudentId = student.Id,
+            AdmissionNumber = student.AdmissionNumber,
+            RollNumber = student.RollNumber,
+            Grade = student.Grade,
+            Section = student.Section,
+            AdmissionDate = student.AdmissionDate,
+            Status = student.Status,
+            IsActive = student.IsActive
+        };
 
         private static StudentDto ToDto(Student student) => new()
         {
