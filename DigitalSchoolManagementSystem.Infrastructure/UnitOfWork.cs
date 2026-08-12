@@ -19,6 +19,11 @@ namespace DigitalSchoolManagementSystem.Infrastructure
         private IExamRepository? _exams;
         private IGenericRepository<ExamSubject>? _examSubjects;
         private IExamResultRepository? _examResults;
+        private IAnnouncementRepository? _announcements;
+        private IConversationRepository? _conversations;
+        private IGenericRepository<ConversationParticipant>? _conversationParticipants;
+        private IMessageRepository? _messages;
+        private INotificationRepository? _notifications;
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -35,6 +40,12 @@ namespace DigitalSchoolManagementSystem.Infrastructure
         public IExamRepository Exams => _exams ??= new ExamRepository(_context);
         public IGenericRepository<ExamSubject> ExamSubjects => _examSubjects ??= new GenericRepository<ExamSubject>(_context);
         public IExamResultRepository ExamResults => _examResults ??= new ExamResultRepository(_context);
+        public IAnnouncementRepository Announcements => _announcements ??= new AnnouncementRepository(_context);
+        public IConversationRepository Conversations => _conversations ??= new ConversationRepository(_context);
+        public IGenericRepository<ConversationParticipant> ConversationParticipants =>
+            _conversationParticipants ??= new GenericRepository<ConversationParticipant>(_context);
+        public IMessageRepository Messages => _messages ??= new MessageRepository(_context);
+        public INotificationRepository Notifications => _notifications ??= new NotificationRepository(_context);
 
         public Task<int> SaveChangesAsync() => _context.SaveChangesAsync();
 

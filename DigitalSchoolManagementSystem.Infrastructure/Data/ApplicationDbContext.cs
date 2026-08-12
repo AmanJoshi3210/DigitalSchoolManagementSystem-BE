@@ -20,6 +20,11 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
         public DbSet<Exam> Exams => Set<Exam>();
         public DbSet<ExamSubject> ExamSubjects => Set<ExamSubject>();
         public DbSet<ExamResult> ExamResults => Set<ExamResult>();
+        public DbSet<Announcement> Announcements => Set<Announcement>();
+        public DbSet<Conversation> Conversations => Set<Conversation>();
+        public DbSet<ConversationParticipant> ConversationParticipants => Set<ConversationParticipant>();
+        public DbSet<Message> Messages => Set<Message>();
+        public DbSet<Notification> Notifications => Set<Notification>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -159,6 +164,86 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
                 entity.HasOne(e => e.ExamSubject)
                       .WithMany()
                       .HasForeignKey(e => e.ExamSubjectId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Announcement>(entity =>
+            {
+                entity.HasIndex(e => e.TargetGrade);
+
+                entity.Property(e => e.Title).IsRequired().HasMaxLength(150);
+                entity.Property(e => e.Content).IsRequired().HasMaxLength(2000);
+                entity.Property(e => e.TargetGrade).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.StaffName).IsRequired().HasMaxLength(150);
+
+                entity.HasOne(e => e.Staff)
+                      .WithMany()
+                      .HasForeignKey(e => e.StaffId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Conversation>(entity =>
+            {
+                entity.Property(e => e.Subject).HasMaxLength(200);
+
+                entity.HasOne(e => e.CreatedByUser)
+                      .WithMany()
+                      .HasForeignKey(e => e.CreatedByUserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.ResolvedByUser)
+                      .WithMany()
+                      .HasForeignKey(e => e.ResolvedByUserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<ConversationParticipant>(entity =>
+            {
+                entity.HasIndex(e => new { e.ConversationId, e.UserId }).IsUnique();
+
+                entity.HasOne(e => e.Conversation)
+                      .WithMany(c => c.Participants)
+                      .HasForeignKey(e => e.ConversationId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.User)
+                      .WithMany()
+                      .HasForeignKey(e => e.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Message>(entity =>
+            {
+                entity.HasIndex(e => new { e.ConversationId, e.CreatedAt });
+
+                entity.Property(e => e.Content).IsRequired().HasMaxLength(4000);
+
+                entity.HasOne(e => e.Conversation)
+                      .WithMany(c => c.Messages)
+                      .HasForeignKey(e => e.ConversationId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Sender)
+                      .WithMany()
+                      .HasForeignKey(e => e.SenderUserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.HasIndex(e => new { e.RecipientUserId, e.IsRead });
+
+                entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Body).IsRequired().HasMaxLength(500);
+
+                entity.HasOne(e => e.Recipient)
+                      .WithMany()
+                      .HasForeignKey(e => e.RecipientUserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Conversation)
+                      .WithMany()
+                      .HasForeignKey(e => e.ConversationId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
         }

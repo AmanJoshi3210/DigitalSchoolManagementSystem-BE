@@ -14,6 +14,11 @@ namespace DigitalSchoolManagementSystem.Application.Interfaces
         IExamRepository Exams { get; }
         IGenericRepository<ExamSubject> ExamSubjects { get; }
         IExamResultRepository ExamResults { get; }
+        IAnnouncementRepository Announcements { get; }
+        IConversationRepository Conversations { get; }
+        IGenericRepository<ConversationParticipant> ConversationParticipants { get; }
+        IMessageRepository Messages { get; }
+        INotificationRepository Notifications { get; }
 
         Task<int> SaveChangesAsync();
     }

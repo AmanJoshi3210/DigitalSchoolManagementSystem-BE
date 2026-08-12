@@ -36,5 +36,14 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Repositories
 
         public async Task<bool> UsernameExistsAsync(string username) =>
             await DbSet.AnyAsync(u => u.Username == username);
+
+        public async Task<IReadOnlyList<User>> GetActiveByRoleNamesAsync(IEnumerable<string> roleNames, int excludeUserId) =>
+            await DbSet
+                .Include(u => u.Role)
+                .Include(u => u.StaffUser)
+                .Include(u => u.Student)
+                .Where(u => u.IsActive && u.Id != excludeUserId && roleNames.Contains(u.Role.Name))
+                .OrderBy(u => u.FirstName).ThenBy(u => u.LastName)
+                .ToListAsync();
     }
 }

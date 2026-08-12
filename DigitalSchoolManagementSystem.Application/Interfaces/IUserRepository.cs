@@ -10,5 +10,6 @@ namespace DigitalSchoolManagementSystem.Application.Interfaces
         Task<User?> GetWithDetailsAsync(int id);
         Task<bool> EmailExistsAsync(string email);
         Task<bool> UsernameExistsAsync(string username);
+        Task<IReadOnlyList<User>> GetActiveByRoleNamesAsync(IEnumerable<string> roleNames, int excludeUserId);
     }
 }
