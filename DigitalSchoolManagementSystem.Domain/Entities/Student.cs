@@ -14,6 +14,7 @@ namespace DigitalSchoolManagementSystem.Domain.Entities
         public string? GuardianName { get; set; }
         public string? GuardianPhoneNumber { get; set; }
         public string? BloodGroup { get; set; }
+        public EducationLevel? EducationLevel { get; set; }
         public EnrollmentStatus Status { get; set; } = EnrollmentStatus.Active;
 
         public int UserId { get; set; }

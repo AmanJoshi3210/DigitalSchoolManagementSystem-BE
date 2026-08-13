@@ -18,5 +18,6 @@ namespace DigitalSchoolManagementSystem.Application.DTOs.Students
         public string? GuardianName { get; set; }
         public string? GuardianPhoneNumber { get; set; }
         public string? BloodGroup { get; set; }
+        public EducationLevel? EducationLevel { get; set; }
     }
 }

@@ -25,6 +25,8 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
         public DbSet<ConversationParticipant> ConversationParticipants => Set<ConversationParticipant>();
         public DbSet<Message> Messages => Set<Message>();
         public DbSet<Notification> Notifications => Set<Notification>();
+        public DbSet<EducationProgram> EducationPrograms => Set<EducationProgram>();
+        public DbSet<ProgramApplication> ProgramApplications => Set<ProgramApplication>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -244,6 +246,34 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
                 entity.HasOne(e => e.Conversation)
                       .WithMany()
                       .HasForeignKey(e => e.ConversationId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<EducationProgram>(entity =>
+            {
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(150);
+                entity.Property(e => e.Description).HasMaxLength(1000);
+            });
+
+            modelBuilder.Entity<ProgramApplication>(entity =>
+            {
+                entity.HasIndex(e => new { e.StudentId, e.ProgramId }).IsUnique();
+
+                entity.Property(e => e.ReviewNotes).HasMaxLength(500);
+
+                entity.HasOne(e => e.Student)
+                      .WithMany()
+                      .HasForeignKey(e => e.StudentId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Program)
+                      .WithMany(p => p.Applications)
+                      .HasForeignKey(e => e.ProgramId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.ReviewedByStaff)
+                      .WithMany()
+                      .HasForeignKey(e => e.ReviewedByStaffId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
         }

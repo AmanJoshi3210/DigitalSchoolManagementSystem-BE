@@ -20,6 +20,7 @@ namespace DigitalSchoolManagementSystem.Application
             services.AddScoped<IStudentAcademicsService, StudentAcademicsService>();
             services.AddScoped<IMessagingService, MessagingService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IProgramService, ProgramService>();
 
             return services;
         }

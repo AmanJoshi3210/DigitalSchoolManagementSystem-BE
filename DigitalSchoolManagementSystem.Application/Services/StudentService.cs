@@ -43,6 +43,7 @@ namespace DigitalSchoolManagementSystem.Application.Services
             student.GuardianName = request.GuardianName;
             student.GuardianPhoneNumber = request.GuardianPhoneNumber;
             student.BloodGroup = request.BloodGroup;
+            student.EducationLevel = request.EducationLevel;
 
             student.User.FirstName = request.FirstName;
             student.User.LastName = request.LastName;
@@ -71,7 +72,9 @@ namespace DigitalSchoolManagementSystem.Application.Services
             student.User.DateOfBirth = request.DateOfBirth;
             student.User.Gender = request.Gender;
             student.User.ProfileImageUrl = request.ProfileImageUrl;
+            student.EducationLevel = request.EducationLevel;
 
+            _unitOfWork.Students.Update(student);
             _unitOfWork.Users.Update(student.User);
             await _unitOfWork.SaveChangesAsync();
 
@@ -136,6 +139,7 @@ namespace DigitalSchoolManagementSystem.Application.Services
             GuardianName = student.GuardianName,
             GuardianPhoneNumber = student.GuardianPhoneNumber,
             BloodGroup = student.BloodGroup,
+            EducationLevel = student.EducationLevel,
             IsActive = student.IsActive
         };
     }

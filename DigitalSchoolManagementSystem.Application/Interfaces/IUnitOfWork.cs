@@ -19,6 +19,8 @@ namespace DigitalSchoolManagementSystem.Application.Interfaces
         IGenericRepository<ConversationParticipant> ConversationParticipants { get; }
         IMessageRepository Messages { get; }
         INotificationRepository Notifications { get; }
+        IEducationProgramRepository Programs { get; }
+        IProgramApplicationRepository ProgramApplications { get; }
 
         Task<int> SaveChangesAsync();
     }

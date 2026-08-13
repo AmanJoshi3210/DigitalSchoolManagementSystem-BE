@@ -24,6 +24,8 @@ namespace DigitalSchoolManagementSystem.Infrastructure
         private IGenericRepository<ConversationParticipant>? _conversationParticipants;
         private IMessageRepository? _messages;
         private INotificationRepository? _notifications;
+        private IEducationProgramRepository? _programs;
+        private IProgramApplicationRepository? _programApplications;
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -46,6 +48,8 @@ namespace DigitalSchoolManagementSystem.Infrastructure
             _conversationParticipants ??= new GenericRepository<ConversationParticipant>(_context);
         public IMessageRepository Messages => _messages ??= new MessageRepository(_context);
         public INotificationRepository Notifications => _notifications ??= new NotificationRepository(_context);
+        public IEducationProgramRepository Programs => _programs ??= new EducationProgramRepository(_context);
+        public IProgramApplicationRepository ProgramApplications => _programApplications ??= new ProgramApplicationRepository(_context);
 
         public Task<int> SaveChangesAsync() => _context.SaveChangesAsync();
 
