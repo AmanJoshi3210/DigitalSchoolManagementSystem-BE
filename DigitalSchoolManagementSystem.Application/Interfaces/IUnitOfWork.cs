@@ -21,6 +21,8 @@ namespace DigitalSchoolManagementSystem.Application.Interfaces
         INotificationRepository Notifications { get; }
         IEducationProgramRepository Programs { get; }
         IProgramApplicationRepository ProgramApplications { get; }
+        IFileStorageRepository FileStorages { get; }
+        IDocumentRepository Documents { get; }
 
         Task<int> SaveChangesAsync();
     }

@@ -26,6 +26,8 @@ namespace DigitalSchoolManagementSystem.Infrastructure
         private INotificationRepository? _notifications;
         private IEducationProgramRepository? _programs;
         private IProgramApplicationRepository? _programApplications;
+        private IFileStorageRepository? _fileStorages;
+        private IDocumentRepository? _documents;
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -50,6 +52,8 @@ namespace DigitalSchoolManagementSystem.Infrastructure
         public INotificationRepository Notifications => _notifications ??= new NotificationRepository(_context);
         public IEducationProgramRepository Programs => _programs ??= new EducationProgramRepository(_context);
         public IProgramApplicationRepository ProgramApplications => _programApplications ??= new ProgramApplicationRepository(_context);
+        public IFileStorageRepository FileStorages => _fileStorages ??= new FileStorageRepository(_context);
+        public IDocumentRepository Documents => _documents ??= new DocumentRepository(_context);
 
         public Task<int> SaveChangesAsync() => _context.SaveChangesAsync();
 

@@ -30,6 +30,8 @@ namespace DigitalSchoolManagementSystem.Infrastructure
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<IEducationProgramRepository, EducationProgramRepository>();
             services.AddScoped<IProgramApplicationRepository, ProgramApplicationRepository>();
+            services.AddScoped<IFileStorageRepository, FileStorageRepository>();
+            services.AddScoped<IDocumentRepository, DocumentRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddSingleton<IPasswordHasher, PasswordHasher>();

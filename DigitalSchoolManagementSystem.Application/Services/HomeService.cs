@@ -58,7 +58,7 @@ namespace DigitalSchoolManagementSystem.Application.Services
                 home.StaffInfo = new StaffHomeInfoDto
                 {
                     EmployeeCode = user.StaffUser.EmployeeCode,
-                    Designation = user.StaffUser.Designation,
+                    Role = user.StaffUser.Role,
                     Department = user.StaffUser.Department,
                     TotalActiveStudents = activeStudents
                 };

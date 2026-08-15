@@ -50,7 +50,7 @@ namespace DigitalSchoolManagementSystem.Application.Services
             var staffUser = new StaffUser
             {
                 EmployeeCode = request.EmployeeCode,
-                Designation = request.Designation,
+                Role = request.Role,
                 Department = request.Department,
                 JoiningDate = request.JoiningDate,
                 Qualification = request.Qualification,

@@ -27,6 +27,9 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<EducationProgram> EducationPrograms => Set<EducationProgram>();
         public DbSet<ProgramApplication> ProgramApplications => Set<ProgramApplication>();
+        public DbSet<Document> Documents => Set<Document>();
+        public DbSet<FileStorage> FileStorages => Set<FileStorage>();
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -79,7 +82,6 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
                 entity.HasIndex(e => e.UserId).IsUnique();
 
                 entity.Property(e => e.EmployeeCode).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Designation).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Department).HasMaxLength(100);
                 entity.Property(e => e.Qualification).HasMaxLength(150);
                 entity.Property(e => e.Salary).HasColumnType("decimal(18,2)");
@@ -274,6 +276,31 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
                 entity.HasOne(e => e.ReviewedByStaff)
                       .WithMany()
                       .HasForeignKey(e => e.ReviewedByStaffId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<FileStorage>(entity =>
+            {
+                entity.Property(e => e.FileName).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.StoredFileName).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.StoragePath).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.ContentType).IsRequired().HasMaxLength(150);
+                entity.Property(e => e.Extension).HasMaxLength(20);
+                entity.Property(e => e.FileHash).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<Document>(entity =>
+            {
+                entity.Property(e => e.Description).HasMaxLength(500);
+
+                entity.HasOne(e => e.FileStorage)
+                      .WithMany()
+                      .HasForeignKey(e => e.FileStorageId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.UploadedByUser)
+                      .WithMany()
+                      .HasForeignKey(e => e.UploadedByUserId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
         }

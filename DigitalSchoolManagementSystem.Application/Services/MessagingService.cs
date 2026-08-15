@@ -328,7 +328,7 @@ namespace DigitalSchoolManagementSystem.Application.Services
             FullName = FullName(user),
             Role = user.Role.Name,
             Subtitle = user.StaffUser is not null
-                ? user.StaffUser.Designation
+                ? user.StaffUser.Role.ToString()
                 : user.Student is not null
                     ? $"Grade {user.Student.Grade} - {user.Student.Section}"
                     : string.Empty

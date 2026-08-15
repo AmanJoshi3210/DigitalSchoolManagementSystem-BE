@@ -1,3 +1,5 @@
+using DigitalSchoolManagementSystem.Domain.Enums;
+
 namespace DigitalSchoolManagementSystem.Application.DTOs.Home
 {
     public class HomeDto
@@ -27,7 +29,7 @@ namespace DigitalSchoolManagementSystem.Application.DTOs.Home
     public class StaffHomeInfoDto
     {
         public string EmployeeCode { get; set; } = string.Empty;
-        public string Designation { get; set; } = string.Empty;
+        public StaffRole Role { get; set; }
         public string? Department { get; set; }
         public int TotalActiveStudents { get; set; }
     }

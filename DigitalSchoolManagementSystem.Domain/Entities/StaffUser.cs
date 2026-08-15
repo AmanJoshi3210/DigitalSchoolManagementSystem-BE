@@ -1,4 +1,5 @@
 using DigitalSchoolManagementSystem.Domain.Common;
+using DigitalSchoolManagementSystem.Domain.Enums;
 
 namespace DigitalSchoolManagementSystem.Domain.Entities
 {
@@ -6,7 +7,7 @@ namespace DigitalSchoolManagementSystem.Domain.Entities
     public class StaffUser : BaseEntity
     {
         public string EmployeeCode { get; set; } = string.Empty;
-        public string Designation { get; set; } = string.Empty;
+        public StaffRole Role { get; set; }
         public string? Department { get; set; }
         public DateTime JoiningDate { get; set; }
         public string? Qualification { get; set; }

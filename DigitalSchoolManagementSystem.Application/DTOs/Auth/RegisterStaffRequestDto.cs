@@ -29,8 +29,7 @@ namespace DigitalSchoolManagementSystem.Application.DTOs.Auth
         [Required, MaxLength(50)]
         public string EmployeeCode { get; set; } = string.Empty;
 
-        [Required, MaxLength(100)]
-        public string Designation { get; set; } = string.Empty;
+        public StaffRole Role { get; set; }
 
         [MaxLength(100)]
         public string? Department { get; set; }

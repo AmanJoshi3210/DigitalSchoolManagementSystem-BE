@@ -47,5 +47,10 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Repositories
 
         public async Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null) =>
             predicate is null ? await DbSet.CountAsync() : await DbSet.CountAsync(predicate);
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await Context.SaveChangesAsync();
+        }
     }
 }
