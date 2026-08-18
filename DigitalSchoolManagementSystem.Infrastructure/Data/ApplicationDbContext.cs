@@ -283,10 +283,11 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
             {
                 entity.Property(e => e.FileName).IsRequired().HasMaxLength(255);
                 entity.Property(e => e.StoredFileName).IsRequired().HasMaxLength(255);
-                entity.Property(e => e.StoragePath).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.Url).IsRequired().HasMaxLength(500);
                 entity.Property(e => e.ContentType).IsRequired().HasMaxLength(150);
                 entity.Property(e => e.Extension).HasMaxLength(20);
                 entity.Property(e => e.FileHash).HasMaxLength(128);
+                entity.Property(e => e.ResourceType).IsRequired().HasMaxLength(20);
             });
 
             modelBuilder.Entity<Document>(entity =>

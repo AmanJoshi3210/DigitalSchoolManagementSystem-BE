@@ -1,52 +1,41 @@
 using System.Security.Cryptography;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using DigitalSchoolManagementSystem.Application.Interfaces;
 using DigitalSchoolManagementSystem.Application.IServices;
 using DigitalSchoolManagementSystem.Application.Models;
+using DigitalSchoolManagementSystem.Application.Options;
 using DigitalSchoolManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace DigitalSchoolManagementSystem.Application.Services
 {
     public class FileStorageService : IFileStorageService
     {
         private const long DefaultMaxFileSizeBytes = 10 * 1024 * 1024; // 10 MB
-        private const string DefaultRootPath = "App_Data/Documents";
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly Cloudinary _cloudinary;
         private readonly ILogger<FileStorageService> _logger;
-        private readonly string _rootPath;
         private readonly long _maxFileSizeBytes;
+        private readonly string _folder;
 
         public FileStorageService(
             IUnitOfWork unitOfWork,
+            Cloudinary cloudinary,
+            IOptions<CloudinarySettings> cloudinarySettings,
             IConfiguration configuration,
-            IHostEnvironment environment,
             ILogger<FileStorageService> logger)
         {
             _unitOfWork = unitOfWork;
+            _cloudinary = cloudinary;
             _logger = logger;
 
-            // Resolve relative to the app's content root so storage works the same on any
-            // machine/deployment instead of depending on a hardcoded absolute drive path.
-            var configuredPath = configuration["FileStorage:RootPath"] ?? DefaultRootPath;
-            _rootPath = Path.IsPathRooted(configuredPath)
-                ? configuredPath
-                : Path.Combine(environment.ContentRootPath, configuredPath);
-
             _maxFileSizeBytes = configuration.GetValue<long?>("FileStorage:MaxFileSizeBytes") ?? DefaultMaxFileSizeBytes;
-        }
-
-        public static string GenerateStoredFileName(string originalFileName)
-        {
-            string uniqueIdentifier = Guid.NewGuid().ToString();
-
-            string fileExtension =
-                Path.GetExtension(originalFileName);
-
-            return $"{uniqueIdentifier}{fileExtension}";
+            _folder = cloudinarySettings.Value.Folder;
         }
 
         // ---------------------------------------------------------
@@ -71,72 +60,66 @@ namespace DigitalSchoolManagementSystem.Application.Services
                     nameof(file));
             }
 
-            // Make sure the directory exists
-            Directory.CreateDirectory(_rootPath);
-
-            // Generate unique stored filename
-            string storedFileName =
-                GenerateStoredFileName(file.FileName);
-
-            // Full physical path
-            string fullPath =
-                Path.Combine(_rootPath, storedFileName);
-
-            try
+            // Buffer once so the same bytes can be hashed and then handed to Cloudinary —
+            // IFormFile's underlying stream isn't guaranteed to support seeking/re-reading.
+            var buffer = new MemoryStream();
+            await using (var source = file.OpenReadStream())
             {
-                string fileHash;
-
-                // Save physical file (ReadWrite so we can seek back and hash it below)
-                await using (var stream = new FileStream(
-                    fullPath,
-                    FileMode.Create,
-                    FileAccess.ReadWrite,
-                    FileShare.None))
-                {
-                    await file.CopyToAsync(
-                        stream,
-                        cancellationToken);
-
-                    stream.Position = 0;
-                    var hashBytes = await SHA256.HashDataAsync(stream, cancellationToken);
-                    fileHash = Convert.ToHexString(hashBytes);
-                }
-
-                // Create database entity
-                var fileStorage = new FileStorage
-                {
-                    FileName = file.FileName,
-                    StoredFileName = storedFileName,
-                    StoragePath = fullPath,
-                    ContentType = file.ContentType,
-                    FileSize = file.Length,
-                    Extension = Path.GetExtension(file.FileName),
-                    FileHash = fileHash
-                };
-
-                _logger.LogInformation(
-                    "Storing file {FileName} ({FileSize} bytes) as {StoredFileName}",
-                    fileStorage.FileName,
-                    fileStorage.FileSize,
-                    fileStorage.StoredFileName);
-
-                // Save FileStorage record
-                await _unitOfWork.FileStorages.AddAsync(fileStorage);
-                await _unitOfWork.SaveChangesAsync();
-
-                return fileStorage;
+                await source.CopyToAsync(buffer, cancellationToken);
             }
-            catch
+
+            buffer.Position = 0;
+            var hashBytes = await SHA256.HashDataAsync(buffer, cancellationToken);
+            var fileHash = Convert.ToHexString(hashBytes);
+
+            buffer.Position = 0;
+
+            var uploadParams = new RawUploadParams
             {
-                // If database operation fails after
-                // physical file was created, clean it up.
-                if (File.Exists(fullPath))
-                {
-                    File.Delete(fullPath);
-                }
+                File = new FileDescription(file.FileName, buffer),
+                PublicId = Guid.NewGuid().ToString(),
+                Folder = _folder,
+                UseFilename = false,
+                Overwrite = false
+            };
 
-                throw;
+            // "auto" lets Cloudinary route the asset to its image/video/raw pipeline based on
+            // content, which is what gives images automatic optimization/transformations.
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams, "auto", cancellationToken);
+
+            if (uploadResult.Error != null)
+            {
+                _logger.LogError(
+                    "Cloudinary upload failed for {FileName}: {Error}",
+                    file.FileName,
+                    uploadResult.Error.Message);
+
+                throw new InvalidOperationException($"File upload failed: {uploadResult.Error.Message}");
             }
+
+            var fileStorage = new FileStorage
+            {
+                FileName = file.FileName,
+                StoredFileName = uploadResult.PublicId,
+                Url = uploadResult.SecureUrl.ToString(),
+                ContentType = file.ContentType,
+                FileSize = file.Length,
+                Extension = Path.GetExtension(file.FileName),
+                FileHash = fileHash,
+                ResourceType = uploadResult.ResourceType
+            };
+
+            _logger.LogInformation(
+                "Uploaded file {FileName} ({FileSize} bytes) to Cloudinary as {PublicId}",
+                fileStorage.FileName,
+                fileStorage.FileSize,
+                fileStorage.StoredFileName);
+
+            // Save FileStorage record
+            await _unitOfWork.FileStorages.AddAsync(fileStorage);
+            await _unitOfWork.SaveChangesAsync();
+
+            return fileStorage;
         }
 
         // ---------------------------------------------------------
@@ -167,26 +150,9 @@ namespace DigitalSchoolManagementSystem.Application.Services
                 return null;
             }
 
-            // Check physical file exists
-            if (!File.Exists(fileStorage.StoragePath))
-            {
-                _logger.LogWarning(
-                    "FileStorage {FileStorageId} references a missing physical file at {StoragePath}",
-                    fileStorageId,
-                    fileStorage.StoragePath);
-
-                return null;
-            }
-
-            var stream = new FileStream(
-                fileStorage.StoragePath,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read);
-
             return new StoredFileResult
             {
-                Stream = stream,
+                Url = fileStorage.Url,
                 FileName = fileStorage.FileName,
                 ContentType = fileStorage.ContentType,
                 FileSize = fileStorage.FileSize
@@ -205,10 +171,18 @@ namespace DigitalSchoolManagementSystem.Application.Services
                 return false;
             }
 
-            // Delete physical file if it exists
-            if (File.Exists(fileStorage.StoragePath))
+            var resourceType = Enum.Parse<ResourceType>(fileStorage.ResourceType, ignoreCase: true);
+            var deletionResult = await _cloudinary.DestroyAsync(new DeletionParams(fileStorage.StoredFileName)
             {
-                File.Delete(fileStorage.StoragePath);
+                ResourceType = resourceType
+            });
+
+            if (deletionResult.Error != null)
+            {
+                _logger.LogWarning(
+                    "Cloudinary deletion for {PublicId} returned an error: {Error}",
+                    fileStorage.StoredFileName,
+                    deletionResult.Error.Message);
             }
 
             // Remove database record

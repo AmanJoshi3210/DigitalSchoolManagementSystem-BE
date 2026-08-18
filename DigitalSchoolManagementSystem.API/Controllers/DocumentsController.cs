@@ -19,17 +19,25 @@ namespace DigitalSchoolManagementSystem.API.Controllers
         }
 
         [HttpPost]
+        [Consumes("multipart/form-data")]
         public async Task<ActionResult<DocumentDto>> Upload(
             [FromForm] UploadDocumentRequestDto request,
-            IFormFile file,
+            [FromForm] IFormFile file,
             CancellationToken cancellationToken)
         {
             try
             {
                 var document = await _documentService.UploadAsync(
-                    CurrentUserId(), file, request.DocumentType, request.Description, cancellationToken);
+                    CurrentUserId(),
+                    file,
+                    request.DocumentType,
+                    request.Description,
+                    cancellationToken);
 
-                return CreatedAtAction(nameof(GetById), new { id = document.Id }, document);
+                return CreatedAtAction(
+                    nameof(GetById),
+                    new { id = document.Id },
+                    document);
             }
             catch (ArgumentException ex)
             {
@@ -57,6 +65,14 @@ namespace DigitalSchoolManagementSystem.API.Controllers
             return Ok(documents);
         }
 
+        [HttpGet("user/{userId:int}")]
+        [Authorize(Roles = "Staff")]
+        public async Task<ActionResult<IReadOnlyList<DocumentDto>>> GetByUser(int userId)
+        {
+            var documents = await _documentService.GetByUploaderAsync(userId);
+            return Ok(documents);
+        }
+
         [HttpGet("{id:int}/download")]
         public async Task<IActionResult> Download(int id, CancellationToken cancellationToken)
         {
@@ -71,7 +87,9 @@ namespace DigitalSchoolManagementSystem.API.Controllers
             if (file is null)
                 return NotFound();
 
-            return File(file.Stream, file.ContentType, file.FileName);
+            // Authorization already checked above; redirect to Cloudinary's CDN so the file is
+            // streamed directly to the client instead of proxied through this API.
+            return Redirect(file.Url);
         }
 
         [HttpDelete("{id:int}")]

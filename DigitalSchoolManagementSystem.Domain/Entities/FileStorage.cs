@@ -11,11 +11,11 @@ namespace DigitalSchoolManagementSystem.Domain.Entities
         // Original uploaded file name
         public string FileName { get; set; } = null!;
 
-        // Name used to physically store the file
+        // Cloudinary public ID used to manage (fetch/delete) the asset
         public string StoredFileName { get; set; } = null!;
 
-        // Physical path / blob path
-        public string StoragePath { get; set; } = null!;
+        // Cloudinary secure (HTTPS) delivery URL
+        public string Url { get; set; } = null!;
 
         // MIME type: application/pdf, image/png, etc.
         public string ContentType { get; set; } = null!;
@@ -28,5 +28,8 @@ namespace DigitalSchoolManagementSystem.Domain.Entities
 
         // Optional hash for duplicate detection
         public string? FileHash { get; set; }
+
+        // Cloudinary resource type ("image", "video", or "raw") — required to delete the asset
+        public string ResourceType { get; set; } = null!;
     }
 }
