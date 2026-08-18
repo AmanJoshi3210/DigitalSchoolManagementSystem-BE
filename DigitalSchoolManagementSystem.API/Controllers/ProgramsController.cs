@@ -82,6 +82,13 @@ namespace DigitalSchoolManagementSystem.API.Controllers
             }
         }
 
+        [HttpGet("applications/pending")]
+        [Authorize(Roles = "Staff")]
+        public async Task<ActionResult<IReadOnlyList<ProgramApplicationDto>>> GetPendingApplications()
+        {
+            return Ok(await _programService.GetPendingApplicationsAsync());
+        }
+
         [HttpPost("{id:int}/apply")]
         [Authorize(Roles = "Student")]
         public async Task<ActionResult<ProgramApplicationDto>> Apply(int id)

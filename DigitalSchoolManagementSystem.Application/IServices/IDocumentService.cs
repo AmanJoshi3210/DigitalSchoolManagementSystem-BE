@@ -18,8 +18,12 @@ namespace DigitalSchoolManagementSystem.Application.IServices
 
         Task<IReadOnlyList<DocumentDto>> GetByUploaderAsync(int uploadedByUserId);
 
+        Task<IReadOnlyList<DocumentDto>> GetPendingAsync();
+
         Task<StoredFileResult?> DownloadAsync(int documentId, CancellationToken cancellationToken = default);
 
         Task DeleteAsync(int documentId, int requestingUserId, bool requestingUserIsStaff);
+
+        Task<DocumentDto> ReviewAsync(int documentId, int staffUserId, ReviewDocumentDto request);
     }
 }

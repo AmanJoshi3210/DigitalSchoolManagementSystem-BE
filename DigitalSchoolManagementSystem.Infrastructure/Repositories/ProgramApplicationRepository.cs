@@ -1,5 +1,6 @@
 using DigitalSchoolManagementSystem.Application.Interfaces;
 using DigitalSchoolManagementSystem.Domain.Entities;
+using DigitalSchoolManagementSystem.Domain.Enums;
 using DigitalSchoolManagementSystem.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +31,14 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Repositories
                 .Include(a => a.ReviewedByStaff)
                 .Where(a => a.StudentId == studentId)
                 .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync();
+
+        public async Task<IReadOnlyList<ProgramApplication>> GetPendingAsync() =>
+            await DbSet.Include(a => a.Student).ThenInclude(s => s.User)
+                .Include(a => a.Program)
+                .Include(a => a.ReviewedByStaff)
+                .Where(a => a.Status == ApplicationStatus.Pending)
+                .OrderBy(a => a.CreatedAt)
                 .ToListAsync();
 
         public async Task<bool> ExistsForStudentAndProgramAsync(int studentId, int programId) =>

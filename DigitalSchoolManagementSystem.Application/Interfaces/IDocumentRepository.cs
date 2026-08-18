@@ -9,5 +9,7 @@ namespace DigitalSchoolManagementSystem.Application.Interfaces
         Task<Document?> GetByIdWithDetailsAsync(int id);
 
         Task<IReadOnlyList<Document>> GetByUploaderAsync(int uploadedByUserId);
+
+        Task<IReadOnlyList<Document>> GetPendingAsync();
     }
 }

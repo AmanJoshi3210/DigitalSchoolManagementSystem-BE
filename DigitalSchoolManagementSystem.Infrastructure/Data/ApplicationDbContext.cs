@@ -293,6 +293,7 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
             modelBuilder.Entity<Document>(entity =>
             {
                 entity.Property(e => e.Description).HasMaxLength(500);
+                entity.Property(e => e.ReviewNotes).HasMaxLength(500);
 
                 entity.HasOne(e => e.FileStorage)
                       .WithMany()
@@ -302,6 +303,11 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
                 entity.HasOne(e => e.UploadedByUser)
                       .WithMany()
                       .HasForeignKey(e => e.UploadedByUserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.ReviewedByStaff)
+                      .WithMany()
+                      .HasForeignKey(e => e.ReviewedByStaffId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
         }

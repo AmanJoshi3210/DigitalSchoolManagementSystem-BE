@@ -5,6 +5,10 @@ namespace DigitalSchoolManagementSystem.Domain.Enums
         NewConversation = 1,
         NewMessage = 2,
         QueryResolved = 3,
-        QueryClosed = 4
+        QueryClosed = 4,
+        DocumentApproved = 5,
+        DocumentRejected = 6,
+        ApplicationApproved = 7,
+        ApplicationRejected = 8
     }
 }

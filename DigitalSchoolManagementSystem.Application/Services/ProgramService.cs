@@ -9,10 +9,12 @@ namespace DigitalSchoolManagementSystem.Application.Services
     public class ProgramService : IProgramService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly INotificationService _notificationService;
 
-        public ProgramService(IUnitOfWork unitOfWork)
+        public ProgramService(IUnitOfWork unitOfWork, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
+            _notificationService = notificationService;
         }
 
         public async Task<IReadOnlyList<ProgramDto>> GetAllAsync(bool includeInactive)
@@ -76,6 +78,12 @@ namespace DigitalSchoolManagementSystem.Application.Services
                 throw new KeyNotFoundException("Program not found.");
 
             var applications = await _unitOfWork.ProgramApplications.GetByProgramIdAsync(programId);
+            return applications.Select(ToApplicationDto).ToList();
+        }
+
+        public async Task<IReadOnlyList<ProgramApplicationDto>> GetPendingApplicationsAsync()
+        {
+            var applications = await _unitOfWork.ProgramApplications.GetPendingAsync();
             return applications.Select(ToApplicationDto).ToList();
         }
 
@@ -147,6 +155,15 @@ namespace DigitalSchoolManagementSystem.Application.Services
 
             var reviewed = await _unitOfWork.ProgramApplications.GetByIdWithDetailsAsync(application.Id)
                 ?? throw new InvalidOperationException("Failed to load the reviewed application.");
+
+            await _notificationService.CreateAsync(
+                reviewed.Student.UserId,
+                reviewed.Status == ApplicationStatus.Approved ? NotificationType.ApplicationApproved : NotificationType.ApplicationRejected,
+                reviewed.Status == ApplicationStatus.Approved ? "Application approved" : "Application rejected",
+                reviewed.Status == ApplicationStatus.Approved
+                    ? $"Your application to {reviewed.Program.Name} has been approved."
+                    : $"Your application to {reviewed.Program.Name} was rejected.{(string.IsNullOrWhiteSpace(reviewed.ReviewNotes) ? "" : $" Reason: {reviewed.ReviewNotes}")}");
+
             return ToApplicationDto(reviewed);
         }
 

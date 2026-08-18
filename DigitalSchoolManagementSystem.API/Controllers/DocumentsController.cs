@@ -73,6 +73,36 @@ namespace DigitalSchoolManagementSystem.API.Controllers
             return Ok(documents);
         }
 
+        [HttpGet("pending")]
+        [Authorize(Roles = "Staff")]
+        public async Task<ActionResult<IReadOnlyList<DocumentDto>>> GetPending()
+        {
+            var documents = await _documentService.GetPendingAsync();
+            return Ok(documents);
+        }
+
+        [HttpPut("{id:int}/review")]
+        [Authorize(Roles = "Staff")]
+        public async Task<ActionResult<DocumentDto>> Review(int id, ReviewDocumentDto request)
+        {
+            try
+            {
+                return Ok(await _documentService.ReviewAsync(id, CurrentUserId(), request));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("{id:int}/download")]
         public async Task<IActionResult> Download(int id, CancellationToken cancellationToken)
         {

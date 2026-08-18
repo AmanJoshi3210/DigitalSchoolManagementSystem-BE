@@ -1,4 +1,5 @@
 ﻿using DigitalSchoolManagementSystem.Domain.Common;
+using DigitalSchoolManagementSystem.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,6 +25,15 @@ namespace DigitalSchoolManagementSystem.Domain.Entities
         public int UploadedByUserId { get; set; }
 
         public User UploadedByUser { get; set; } = null!;
+
+        // Verification workflow — staff-uploaded documents are auto-approved (see DocumentService.UploadAsync);
+        // student uploads start Pending and must be reviewed via the Action Hub.
+        public DocumentStatus Status { get; set; } = DocumentStatus.Pending;
+
+        public DateTime? ReviewedAt { get; set; }
+        public int? ReviewedByStaffId { get; set; }
+        public User? ReviewedByStaff { get; set; }
+        public string? ReviewNotes { get; set; }
     }
 
     public enum DocumentType

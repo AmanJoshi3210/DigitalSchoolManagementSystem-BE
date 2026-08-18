@@ -10,6 +10,7 @@ namespace DigitalSchoolManagementSystem.Application.IServices
         Task<ProgramDto> UpdateAsync(int id, UpdateProgramDto request);
         Task<ProgramDto> UpdateStatusAsync(int id, bool isActive);
         Task<IReadOnlyList<ProgramApplicationDto>> GetApplicationsForProgramAsync(int programId);
+        Task<IReadOnlyList<ProgramApplicationDto>> GetPendingApplicationsAsync();
         Task<ProgramApplicationDto> ApplyAsync(int programId, int studentUserId);
         Task<IReadOnlyList<ProgramApplicationDto>> GetMyApplicationsAsync(int studentUserId);
         Task<ProgramApplicationDto> ReviewApplicationAsync(int applicationId, int staffUserId, ReviewApplicationDto request);
