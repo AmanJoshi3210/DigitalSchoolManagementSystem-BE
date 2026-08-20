@@ -15,7 +15,7 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Repositories
             await DbSet
                 .Include(rt => rt.User).ThenInclude(u => u.Role)
                 .Include(rt => rt.User).ThenInclude(u => u.Student)
-                .Include(rt => rt.User).ThenInclude(u => u.StaffUser)
+                .Include(rt => rt.User).ThenInclude(u => u.StaffUser).ThenInclude(s => s!.Permissions)
                 .SingleOrDefaultAsync(rt => rt.Token == token);
     }
 }

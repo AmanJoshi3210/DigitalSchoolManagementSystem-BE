@@ -41,6 +41,15 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Security
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
+            // Raw grants only - no Admin bypass here. RequireStaffPermissionAttribute (API side)
+            // and hasStaffPermission (frontend side) both apply "Admin implies every permission"
+            // by reading the staffRole claim, so this claim set always reflects literal DB rows.
+            if (user.StaffUser is not null)
+            {
+                claims.Add(new Claim("staffRole", ((int)user.StaffUser.Role).ToString()));
+                claims.AddRange(user.StaffUser.Permissions.Select(p => new Claim("permission", p.PermissionKey)));
+            }
+
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
             var expiresAt = DateTime.UtcNow.AddMinutes(expiryMinutes);

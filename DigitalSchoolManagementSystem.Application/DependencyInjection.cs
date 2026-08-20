@@ -38,6 +38,7 @@ namespace DigitalSchoolManagementSystem.Application
             services.AddScoped<IProgramService, ProgramService>();
             services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<IDocumentService, DocumentService>();
+            services.AddScoped<IStaffManagementService, StaffManagementService>();
 
             return services;
         }

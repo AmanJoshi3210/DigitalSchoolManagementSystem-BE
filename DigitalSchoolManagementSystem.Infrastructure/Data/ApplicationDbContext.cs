@@ -13,6 +13,7 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
         public DbSet<User> Users => Set<User>();
         public DbSet<Student> Students => Set<Student>();
         public DbSet<StaffUser> StaffUsers => Set<StaffUser>();
+        public DbSet<StaffPermission> StaffPermissions => Set<StaffPermission>();
         public DbSet<Role> Roles => Set<Role>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<Subject> Subjects => Set<Subject>();
@@ -89,6 +90,18 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
                 entity.HasOne(e => e.User)
                       .WithOne(u => u.StaffUser)
                       .HasForeignKey<StaffUser>(e => e.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<StaffPermission>(entity =>
+            {
+                entity.HasIndex(e => new { e.StaffUserId, e.PermissionKey }).IsUnique();
+
+                entity.Property(e => e.PermissionKey).IsRequired().HasMaxLength(50);
+
+                entity.HasOne(e => e.StaffUser)
+                      .WithMany(s => s.Permissions)
+                      .HasForeignKey(e => e.StaffUserId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
 

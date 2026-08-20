@@ -16,5 +16,19 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Repositories
 
         public async Task<StaffUser?> GetByEmployeeCodeAsync(string employeeCode) =>
             await DbSet.Include(s => s.User).SingleOrDefaultAsync(s => s.EmployeeCode == employeeCode);
+
+        public async Task<StaffUser?> GetByIdWithDetailsAsync(int staffUserId) =>
+            await DbSet
+                .Include(s => s.User)
+                .Include(s => s.Permissions)
+                .SingleOrDefaultAsync(s => s.Id == staffUserId);
+
+        public async Task<IReadOnlyList<StaffUser>> GetAllWithDetailsAsync() =>
+            await DbSet
+                .Include(s => s.User)
+                .Include(s => s.Permissions)
+                .Where(s => s.IsActive)
+                .OrderBy(s => s.User.FirstName).ThenBy(s => s.User.LastName)
+                .ToListAsync();
     }
 }

@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using DigitalSchoolManagementSystem.API.Authorization;
 using DigitalSchoolManagementSystem.Application.DTOs.Messaging;
 using DigitalSchoolManagementSystem.Application.IServices;
+using DigitalSchoolManagementSystem.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -159,6 +161,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpPut("{id:int}/status")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Messages)]
         public async Task<ActionResult<ConversationDto>> UpdateStatus(int id, UpdateConversationStatusDto request)
         {
             try

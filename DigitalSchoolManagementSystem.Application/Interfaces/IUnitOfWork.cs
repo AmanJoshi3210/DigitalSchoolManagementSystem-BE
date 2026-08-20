@@ -7,6 +7,7 @@ namespace DigitalSchoolManagementSystem.Application.Interfaces
         IUserRepository Users { get; }
         IStudentRepository Students { get; }
         IStaffUserRepository StaffUsers { get; }
+        IGenericRepository<StaffPermission> StaffPermissions { get; }
         IGenericRepository<Role> Roles { get; }
         IRefreshTokenRepository RefreshTokens { get; }
         ISubjectRepository Subjects { get; }

@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using DigitalSchoolManagementSystem.API.Authorization;
 using DigitalSchoolManagementSystem.Application.DTOs.Documents;
 using DigitalSchoolManagementSystem.Application.IServices;
+using DigitalSchoolManagementSystem.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -67,6 +69,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpGet("user/{userId:int}")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Students)]
         public async Task<ActionResult<IReadOnlyList<DocumentDto>>> GetByUser(int userId)
         {
             var documents = await _documentService.GetByUploaderAsync(userId);
@@ -75,6 +78,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpGet("pending")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.ActionHub)]
         public async Task<ActionResult<IReadOnlyList<DocumentDto>>> GetPending()
         {
             var documents = await _documentService.GetPendingAsync();
@@ -83,6 +87,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpPut("{id:int}/review")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.ActionHub)]
         public async Task<ActionResult<DocumentDto>> Review(int id, ReviewDocumentDto request)
         {
             try

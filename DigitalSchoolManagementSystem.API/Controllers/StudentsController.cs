@@ -1,7 +1,9 @@
 using System.Security.Claims;
+using DigitalSchoolManagementSystem.API.Authorization;
 using DigitalSchoolManagementSystem.Application.DTOs.Academics;
 using DigitalSchoolManagementSystem.Application.DTOs.Students;
 using DigitalSchoolManagementSystem.Application.IServices;
+using DigitalSchoolManagementSystem.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +25,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Students)]
         public async Task<ActionResult<IReadOnlyList<StudentDto>>> GetAll()
         {
             var students = await _studentService.GetAllAsync();
@@ -78,6 +81,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpGet("{id:int}")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Students)]
         public async Task<ActionResult<StudentDto>> GetById(int id)
         {
             var student = await _studentService.GetByIdAsync(id);
@@ -86,6 +90,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpGet("{id:int}/education-status")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Students)]
         public async Task<ActionResult<EducationStatusDto>> GetEducationStatus(int id)
         {
             var status = await _studentService.GetEducationStatusByIdAsync(id);
@@ -94,6 +99,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpGet("{id:int}/academics")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Students)]
         public async Task<ActionResult<StudentAcademicsSummaryDto>> GetAcademics(int id)
         {
             var summary = await _studentAcademicsService.GetSummaryAsync(id);
@@ -102,6 +108,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpPut("{id:int}")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Students)]
         public async Task<ActionResult<StudentDto>> Update(int id, UpdateStudentDto request)
         {
             try
@@ -117,6 +124,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Students)]
         public async Task<IActionResult> Delete(int id)
         {
             try

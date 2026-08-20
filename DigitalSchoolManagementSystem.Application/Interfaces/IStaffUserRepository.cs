@@ -6,5 +6,7 @@ namespace DigitalSchoolManagementSystem.Application.Interfaces
     {
         Task<StaffUser?> GetByUserIdAsync(int userId);
         Task<StaffUser?> GetByEmployeeCodeAsync(string employeeCode);
+        Task<StaffUser?> GetByIdWithDetailsAsync(int staffUserId);
+        Task<IReadOnlyList<StaffUser>> GetAllWithDetailsAsync();
     }
 }

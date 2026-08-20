@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using DigitalSchoolManagementSystem.API.Authorization;
 using DigitalSchoolManagementSystem.Application.DTOs.Programs;
 using DigitalSchoolManagementSystem.Application.IServices;
+using DigitalSchoolManagementSystem.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,6 +36,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Programs)]
         public async Task<ActionResult<ProgramDto>> Create(CreateProgramDto request)
         {
             var program = await _programService.CreateAsync(request);
@@ -42,6 +45,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpPut("{id:int}")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Programs)]
         public async Task<ActionResult<ProgramDto>> Update(int id, UpdateProgramDto request)
         {
             try
@@ -56,6 +60,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpPut("{id:int}/status")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Programs)]
         public async Task<ActionResult<ProgramDto>> UpdateStatus(int id, UpdateProgramStatusDto request)
         {
             try
@@ -70,6 +75,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpGet("{id:int}/applications")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.Programs)]
         public async Task<ActionResult<IReadOnlyList<ProgramApplicationDto>>> GetApplications(int id)
         {
             try
@@ -84,6 +90,7 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpGet("applications/pending")]
         [Authorize(Roles = "Staff")]
+        [RequireStaffPermission(StaffPermissionKeys.ActionHub)]
         public async Task<ActionResult<IReadOnlyList<ProgramApplicationDto>>> GetPendingApplications()
         {
             return Ok(await _programService.GetPendingApplicationsAsync());
@@ -123,6 +130,9 @@ namespace DigitalSchoolManagementSystem.API.Controllers
 
         [HttpPut("applications/{applicationId:int}/review")]
         [Authorize(Roles = "Staff")]
+        // Shared by ActionHubPage's approve/reject AND a program's own detail-page applications
+        // tab - either permission is sufficient (OR semantics).
+        [RequireStaffPermission(StaffPermissionKeys.ActionHub, StaffPermissionKeys.Programs)]
         public async Task<ActionResult<ProgramApplicationDto>> ReviewApplication(int applicationId, ReviewApplicationDto request)
         {
             try

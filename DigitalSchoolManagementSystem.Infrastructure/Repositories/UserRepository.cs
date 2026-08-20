@@ -21,14 +21,14 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Repositories
             await DbSet
                 .Include(u => u.Role)
                 .Include(u => u.Student)
-                .Include(u => u.StaffUser)
+                .Include(u => u.StaffUser).ThenInclude(s => s!.Permissions)
                 .SingleOrDefaultAsync(u => u.Username == usernameOrEmail || u.Email == usernameOrEmail);
 
         public async Task<User?> GetWithDetailsAsync(int id) =>
             await DbSet
                 .Include(u => u.Role)
                 .Include(u => u.Student)
-                .Include(u => u.StaffUser)
+                .Include(u => u.StaffUser).ThenInclude(s => s!.Permissions)
                 .SingleOrDefaultAsync(u => u.Id == id);
 
         public async Task<bool> EmailExistsAsync(string email) =>

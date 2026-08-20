@@ -113,6 +113,8 @@ namespace DigitalSchoolManagementSystem.Application.Services
             FirstName = user.FirstName,
             LastName = user.LastName,
             Role = user.Role.Name,
+            StaffRole = user.StaffUser?.Role,
+            Permissions = user.StaffUser?.Permissions.Select(p => p.PermissionKey).ToList() ?? new List<string>(),
             AccessToken = tokens.AccessToken,
             AccessTokenExpiresAt = tokens.AccessTokenExpiresAt,
             RefreshToken = tokens.RefreshToken,

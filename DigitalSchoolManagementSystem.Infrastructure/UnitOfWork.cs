@@ -12,6 +12,7 @@ namespace DigitalSchoolManagementSystem.Infrastructure
         private IUserRepository? _users;
         private IStudentRepository? _students;
         private IStaffUserRepository? _staffUsers;
+        private IGenericRepository<StaffPermission>? _staffPermissions;
         private IGenericRepository<Role>? _roles;
         private IRefreshTokenRepository? _refreshTokens;
         private ISubjectRepository? _subjects;
@@ -37,6 +38,8 @@ namespace DigitalSchoolManagementSystem.Infrastructure
         public IUserRepository Users => _users ??= new UserRepository(_context);
         public IStudentRepository Students => _students ??= new StudentRepository(_context);
         public IStaffUserRepository StaffUsers => _staffUsers ??= new StaffUserRepository(_context);
+        public IGenericRepository<StaffPermission> StaffPermissions =>
+            _staffPermissions ??= new GenericRepository<StaffPermission>(_context);
         public IGenericRepository<Role> Roles => _roles ??= new GenericRepository<Role>(_context);
         public IRefreshTokenRepository RefreshTokens => _refreshTokens ??= new RefreshTokenRepository(_context);
         public ISubjectRepository Subjects => _subjects ??= new SubjectRepository(_context);
