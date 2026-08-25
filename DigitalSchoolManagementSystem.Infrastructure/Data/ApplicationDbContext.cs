@@ -59,6 +59,13 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
                       .WithMany(r => r.Users)
                       .HasForeignKey(e => e.RoleId)
                       .OnDelete(DeleteBehavior.Restrict);
+
+                // The user's current profile-photo Document (DocumentType.ProfilePhoto). SetNull
+                // (not Cascade) so deleting the Document never cascades into deleting the User.
+                entity.HasOne(e => e.Document)
+                      .WithMany()
+                      .HasForeignKey(e => e.DocumentId)
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<Student>(entity =>

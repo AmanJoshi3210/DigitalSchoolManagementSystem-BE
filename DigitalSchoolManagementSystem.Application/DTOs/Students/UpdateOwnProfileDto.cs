@@ -12,7 +12,6 @@ namespace DigitalSchoolManagementSystem.Application.DTOs.Students
         public string? Address { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public Gender? Gender { get; set; }
-        public string? ProfileImageUrl { get; set; }
         public EducationLevel? EducationLevel { get; set; }
     }
 }

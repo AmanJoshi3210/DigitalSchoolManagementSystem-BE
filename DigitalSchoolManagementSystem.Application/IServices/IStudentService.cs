@@ -1,4 +1,6 @@
 using DigitalSchoolManagementSystem.Application.DTOs.Students;
+using DigitalSchoolManagementSystem.Application.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace DigitalSchoolManagementSystem.Application.IServices
 {
@@ -12,5 +14,6 @@ namespace DigitalSchoolManagementSystem.Application.IServices
         Task<EducationStatusDto?> GetEducationStatusByIdAsync(int studentId);
         Task<EducationStatusDto?> GetEducationStatusByUserIdAsync(int userId);
         Task DeleteAsync(int id);
+        Task<StoredFileResult> UpdateAddOwnProfileImageAsync(IFormFile File, int userId, CancellationToken cancellationToken = default);
     }
 }

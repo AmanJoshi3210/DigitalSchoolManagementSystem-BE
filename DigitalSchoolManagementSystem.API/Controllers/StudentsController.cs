@@ -3,6 +3,7 @@ using DigitalSchoolManagementSystem.API.Authorization;
 using DigitalSchoolManagementSystem.Application.DTOs.Academics;
 using DigitalSchoolManagementSystem.Application.DTOs.Students;
 using DigitalSchoolManagementSystem.Application.IServices;
+using DigitalSchoolManagementSystem.Application.Models;
 using DigitalSchoolManagementSystem.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,27 @@ namespace DigitalSchoolManagementSystem.API.Controllers
             catch (KeyNotFoundException)
             {
                 return NotFound();
+            }
+        }
+
+        [HttpPut("me/profile-image")]
+        [Authorize(Roles = "Student")]
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<StoredFileResult>> UpdateMyProfileImage(IFormFile file, CancellationToken cancellationToken)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            try
+            {
+                var result = await _studentService.UpdateAddOwnProfileImageAsync(file, userId, cancellationToken);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
 

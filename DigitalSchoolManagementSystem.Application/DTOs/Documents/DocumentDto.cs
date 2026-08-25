@@ -26,6 +26,8 @@ namespace DigitalSchoolManagementSystem.Application.DTOs.Documents
         public DateTime? ReviewedAt { get; set; }
         public string? ReviewedByStaffName { get; set; }
         public string? ReviewNotes { get; set; }
+
+        public int? FileStorageId { get; set; }
     }
 
     public class UploadDocumentRequestDto

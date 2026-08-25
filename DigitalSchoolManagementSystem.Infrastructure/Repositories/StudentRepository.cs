@@ -12,7 +12,9 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Repositories
         }
 
         public async Task<Student?> GetByUserIdAsync(int userId) =>
-            await DbSet.Include(s => s.User).SingleOrDefaultAsync(s => s.UserId == userId);
+            await DbSet
+                .Include(s => s.User)
+            .SingleOrDefaultAsync(s => s.UserId == userId);
 
         public async Task<Student?> GetByAdmissionNumberAsync(string admissionNumber) =>
             await DbSet.Include(s => s.User).SingleOrDefaultAsync(s => s.AdmissionNumber == admissionNumber);

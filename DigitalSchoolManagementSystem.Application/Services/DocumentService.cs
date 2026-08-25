@@ -49,7 +49,10 @@ namespace DigitalSchoolManagementSystem.Application.Services
                 UploadedByUserId = uploadedByUserId,
                 // Staff uploads are self-attested and skip the review queue; student uploads
                 // need staff verification via the Action Hub (Document.Status defaults to Pending).
-                Status = uploader.Role.Name == "Staff" ? DocumentStatus.Approved : DocumentStatus.Pending
+                // Profile photos are never queued for review - they aren't a verifiable credential.
+                Status = uploader.Role.Name == "Staff" || documentType == DocumentType.ProfilePhoto
+                    ? DocumentStatus.Approved
+                    : DocumentStatus.Pending
             };
 
             await _documentRepository.AddAsync(document);
@@ -153,7 +156,8 @@ namespace DigitalSchoolManagementSystem.Application.Services
             ReviewedByStaffName = document.ReviewedByStaff is null
                 ? null
                 : $"{document.ReviewedByStaff.FirstName} {document.ReviewedByStaff.LastName}".Trim(),
-            ReviewNotes = document.ReviewNotes
+            ReviewNotes = document.ReviewNotes,
+            FileStorageId=document.FileStorageId
         };
     }
 }

@@ -18,11 +18,14 @@ namespace DigitalSchoolManagementSystem.Domain.Entities
         public Gender? Gender { get; set; }
         public string? ProfileImageUrl { get; set; }
 
+        public int? DocumentId { get; set; }
+
         public int RoleId { get; set; }
         public Role Role { get; set; } = null!;
 
         public Student? Student { get; set; }
         public StaffUser? StaffUser { get; set; }
+        public Document? Document { get; set; }
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }
