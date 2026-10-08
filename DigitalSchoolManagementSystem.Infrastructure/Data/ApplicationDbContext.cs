@@ -30,6 +30,8 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
         public DbSet<ProgramApplication> ProgramApplications => Set<ProgramApplication>();
         public DbSet<Document> Documents => Set<Document>();
         public DbSet<FileStorage> FileStorages => Set<FileStorage>();
+        public DbSet<ReviewStaff> ReviewStaffs => Set<ReviewStaff>();
+        public DbSet<ReviewerStudent> ReviewerStudents => Set<ReviewerStudent>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -308,6 +310,31 @@ namespace DigitalSchoolManagementSystem.Infrastructure.Data
                 entity.Property(e => e.Extension).HasMaxLength(20);
                 entity.Property(e => e.FileHash).HasMaxLength(128);
                 entity.Property(e => e.ResourceType).IsRequired().HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<ReviewStaff>(entity =>
+            {
+                entity.Property(e => e.AverageReview).HasColumnType("decimal(18,2)");
+
+                entity.HasOne(e => e.Staff)
+                      .WithMany()
+                      .HasForeignKey(e => e.StaffUserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<ReviewerStudent>(entity =>
+            {
+                // Restrict on both FKs: SQL Server rejects the multiple cascade paths
+                // that would otherwise reach ReviewerStudents (via Student and via ReviewStaff).
+                entity.HasOne(e => e.ReviewStaff)
+                      .WithMany(r => r.Reviews)
+                      .HasForeignKey(e => e.ReviewStaffId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Student)
+                      .WithMany()
+                      .HasForeignKey(e => e.StudentId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Document>(entity =>

@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.git
+.git
+.claude
+docs
+*.md
+Dockerfile
+.dockerignore
+**/appsettings.Development.json
+**/*.csproj.user

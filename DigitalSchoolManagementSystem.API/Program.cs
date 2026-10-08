@@ -4,7 +4,9 @@ using DigitalSchoolManagementSystem.API.Realtime;
 using DigitalSchoolManagementSystem.Application;
 using DigitalSchoolManagementSystem.Application.Interfaces;
 using DigitalSchoolManagementSystem.Infrastructure;
+using DigitalSchoolManagementSystem.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
@@ -71,6 +73,13 @@ builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// Opt-in (set by docker-compose) so a fresh SQL Server container gets its schema.
+if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
+{
+    using var scope = app.Services.CreateScope();
+    scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
